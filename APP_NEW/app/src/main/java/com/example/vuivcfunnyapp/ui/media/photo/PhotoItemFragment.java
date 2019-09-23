@@ -1,5 +1,6 @@
 package com.example.vuivcfunnyapp.ui.media.photo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,15 +37,23 @@ public class PhotoItemFragment extends Fragment {
 
         TextView tvPhotoTitle = root.findViewById(R.id.tvPhotoTitle);
         ImageView imvPhoto = root.findViewById(R.id.imvPhoto);
+        TextView tvSharePhoto = root.findViewById(R.id.tvSharePhoto);
 
         if(photoModelItem != null)
         {
             tvPhotoTitle.setText(photoModelItem.getImageTitle());
-            Glide
-                    .with(root)
-                    .load(photoModelItem.getImageUrl())
-                    .fitCenter()
-                    .into(imvPhoto);
+            Glide.with(root).load(photoModelItem.getImageUrl()).into(imvPhoto);
+            tvSharePhoto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent share = new Intent(Intent.ACTION_SEND);
+                    share.setType("text/plain");
+                    share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+                    share.putExtra(Intent.EXTRA_SUBJECT, photoModelItem.getImageTitle());
+                    share.putExtra(Intent.EXTRA_TEXT, photoModelItem.getImageUrl());
+                    getContext().startActivity(Intent.createChooser(share, photoModelItem.getImageTitle()));
+                }
+            });
         }
         return root;
     }
