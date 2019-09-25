@@ -2,5 +2,27 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent">#FA239D</color>
+    <color name="Txt_Facebook">#1CD2FD</color>
+    <color name="Txt_Google">#d84736</color>
+    <color name="Txt_Chu">#FFFFFF</color>
+    <color name="Bt_Login">#1F7BF4</color>
+    <color name="Bt_Register">#b52e1c</color>
+    <color name="Txt_Error">#FA0000</color>
+    <color name="Mau_Button">#32aea2a2</color>
+    <color name="white">#FFFFFF</color>
+    <color name="transparent">#00FFFFFF</color>
+    <color name="black_transparent">#23161616</color>
+    <color name="yellow">#F0DD1E</color>
+    <color name="txtchuden">#000000</color>
+    <color name="black">#201E1E</color>
+    <color name="Xam_transparent">#11AEA2A2</color>
+    <color name="twitter_blue">#1da1f2</color>
+    <color name="deep_gray">#ff657786</color>
+    <color name="tab_selected">@color/twitter_blue</color>
+    <!--<color name="selector">@drawable/tabselector</color>-->
+
+    <color name="startcolor">#006666</color>
+    <color name="midcolor">#777</color>
+    <color name="endcolor">#336666</color>
 </resources>

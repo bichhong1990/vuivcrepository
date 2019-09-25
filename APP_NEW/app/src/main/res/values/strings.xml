@@ -1,7 +1,75 @@
 <resources>
-    <string name="app_name">VuiVCFunnyApp</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="fb_sharePre_Name">fb_sharePre_Name</string>
+    <string name="app_name">vuivc</string>
+    <string name="Txt_Facebook">Login With Facebook</string>
+    <string name="Txt_Google">Login With Google+</string>
+    <string name="facebook_app_id" translatable="false">2260493494173421</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb2260493494173421</string>
+    <string name="dangnhapfacebook" translatable="false">Đăng nhập bằng Facebook</string>
+    <string name="Txt_Login">Bạn đã có tài khoản? Sign in</string>
+    <string name="Sign_up">Đăng ký</string>
+    <string name="Sign_in">Đăng nhập</string>
+    <string name="Txt_Register">Register</string>
+    <string name="Ed_UserName">UserName</string>
+    <string name="Ed_Password">Password</string>
+    <string name="Bt_Back">Back</string>
+    <string name="Error">Invalid UserName of Password</string>
+    <string name="Thanhcong">Login Thanh cong</string>
+    <string name="Error_Register">Tài Khoản Tồn Tại</string>
+    <string name="follow">Follow +</string>
+    <string name="videos">VIDEOS</string>
+    <string name="followers">FOLLOWERS</string>
+    <string name="following">FOLLOWING</string>
+    <string name="image_user">image_user</string>
+    <string name="image_leftarrow">left_arrow</string>
+    <string name="image_setting">setting</string>
+    <string name="like">Liked</string>
+    <string name="Hoso">Hồ sơ</string>
+    <string name="Save">Lưu</string>
+    <string name="ChangeImage">Thay đổi ảnh</string>
+    <string name="editprofile">Sửa đổi hồ sơ</string>
+    <string name="about">Giới thiệu</string>
+    <string name="logout">Đăng xuất</string>
+    <string name="YourVideo">Video của bạn</string>
+    <string name="Followers">Danh sách người theo dõi bạn</string>
+    <string name="Followings">Danh sách người bạn theo dõi</string>
+    <string name="Male">Nam</string>
+    <string name="Female">Nữ</string>
+    <string name="CameraShot">Chụp ảnh</string>
+    <string name="GetImageLocal">Lấy ảnh từ điện thoại</string>
+    <string name="tab_newest">Newest</string>
+    <string name="tab_trend">Trend</string>
+    <string name="tab_videos">Videos</string>
+    <string name="tab_photos">Photos</string>
+    <string name="camket" translatable="false">Thông qua việc đăng ký, bạn xác nhận rằng bạn đồng ý với Điều khoản sử dụng của chúng tôi và đã đọc và hiểu Chính sách về Quyền riêng tư của Chúng tôi</string>
+    <string name="Title">Bạn cần một tài khoản Vuivc để tiếp tục</string>
+    <string name="yeuthich">Yêu Thích</string>
+    <string name="video">Video</string>
+    <string name="hashtag">Hashtag</string>
+    <string name="hinhanh">Hình Ảnh</string>
+    <string name="pickavuivc">Pick A VUIVC</string>
+    <string name="loadimg">Load Image</string>
+    <string name="camera" translatable="false">CAMERA</string>
+    <string name="editanh" translatable="false">Điền thông tin bạn muốn chế vào chổ trống phía dưới</string>
+    <string name="hint">Nhập thông tin</string>
+    <string name="drawtext" translatable="false">Trên</string>
+    <string name="drawtext2" translatable="false">Giữa</string>
+    <string name="drawtext3" translatable="false">Dưới</string>
+    <string name="ru_thang_ban_ra_duong_thoi_cac_thanh_oi_v" translatable="false">Ru thang ban ra duong thoi cac thanh oi :V</string>
+    <string name="phan_dinh_tung">Phan Dinh Tung</string>
+    <string name="todo">TODO</string>
+    <string name="h_y_b" translatable="false">Hủy bỏ</string>
+    <string name="loadimgsever">LOAD IMAGE SEVER</string>
+    <string name="loadimgphone">LOAD IMAGE IN PHONE</string>
+    <string name="fb_sharePre_login_status" translatable="false">false</string>
+    <string name="fb_sharePre_login_id" translatable="false"></string>
+    <string name="fb_sharePre_login_name" translatable="false"></string>
+    <string name="fb_sharePre_login_email" translatable="false"></string>
+    <string name="fb_sharePre_login_imgURL" translatable="false"></string>
+    <string name="forgotpassword">Quen mat khau</string>
+    <string name="Sigin">Dang nhap</string>
+    <string name="thongbaoloi">Ban chua nhap</string>
 </resources>
