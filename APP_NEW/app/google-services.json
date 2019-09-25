@@ -1,42 +1,79 @@
 {
   "project_info": {
-    "project_number": "704087457380",
-    "firebase_url": "https://vuivcfunnyapp.firebaseio.com",
-    "project_id": "vuivcfunnyapp",
-    "storage_bucket": "vuivcfunnyapp.appspot.com"
+    "project_number": "499352237250",
+    "firebase_url": "https://vuivc-da176.firebaseio.com",
+    "project_id": "vuivc-da176",
+    "storage_bucket": "vuivc-da176.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:704087457380:android:dd807e2ec0ff7af6dc6971",
+        "mobilesdk_app_id": "1:499352237250:android:334d4c41d89671ae44375b",
         "android_client_info": {
-          "package_name": "com.example.vuivcfunnyapp"
+          "package_name": "com.example.git.webservice"
         }
       },
       "oauth_client": [
         {
-          "client_id": "704087457380-0bj5q5j1q79us5giph0e51uillrod9g7.apps.googleusercontent.com",
+          "client_id": "499352237250-3bgt269ojnsfj5btu5hu4uikod53qcu3.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.vuivcfunnyapp",
-            "certificate_hash": "6c8e45d115fe2c31c58ccf0a9ef10da4ea32156a"
+            "package_name": "com.example.git.webservice",
+            "certificate_hash": "6afab3a76de10efdb2e72271ea7abfb6068fc5d4"
           }
         },
         {
-          "client_id": "704087457380-raj91k4qrm5j3oi5raulpmu7klkq2q14.apps.googleusercontent.com",
+          "client_id": "499352237250-1mh5fn5d9frjk5kcr0jv7i5ifdvbn89f.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBGEeTq30RCFnZmpfHzSrUfJWVmEFIVefk"
+          "current_key": "AIzaSyDRHlPP8MBp2uxC7Yzzt4f4nBdeYc0sULI"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "704087457380-raj91k4qrm5j3oi5raulpmu7klkq2q14.apps.googleusercontent.com",
+              "client_id": "499352237250-1mh5fn5d9frjk5kcr0jv7i5ifdvbn89f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:499352237250:android:f1cfbfcd7a0f55b844375b",
+        "android_client_info": {
+          "package_name": "com.example.vuivcfunnyapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "499352237250-ebv0fd7tmbjggvctdso5mookl83359vo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.vuivcfunnyapp",
+            "certificate_hash": "6afab3a76de10efdb2e72271ea7abfb6068fc5d4"
+          }
+        },
+        {
+          "client_id": "499352237250-1mh5fn5d9frjk5kcr0jv7i5ifdvbn89f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRHlPP8MBp2uxC7Yzzt4f4nBdeYc0sULI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "499352237250-1mh5fn5d9frjk5kcr0jv7i5ifdvbn89f.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
