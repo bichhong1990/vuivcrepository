@@ -93,7 +93,7 @@ public class UploadPhotoFragment extends Fragment {
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
         database  = FirebaseDatabase.getInstance();
-        url = database.getInstance().getReference("PhotoModel");
+        url = database.getInstance().getReference().child("PhotoModel");
 
         imvPhotoUpload.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,9 +124,10 @@ public class UploadPhotoFragment extends Fragment {
                 // Got the download URL for 'photos/profile.png'
                 String getURL = uri.toString();
                 // Create Photo data
-                PhotoModel photoModel = new PhotoModel((int) System.currentTimeMillis() / 1000,firstText,getURL,1);
-                photoList.add(photoModel);
-                url.setValue(photoList);
+                int id = (int) System.currentTimeMillis() / 1000;
+                PhotoModel photoModel = new PhotoModel(id,firstText,getURL,1);
+                //photoList.add(photoModel);
+                url.setValue(photoModel);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
