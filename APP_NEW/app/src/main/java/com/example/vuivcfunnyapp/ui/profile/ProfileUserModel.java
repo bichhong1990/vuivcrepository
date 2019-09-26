@@ -1,29 +1,42 @@
 package com.example.vuivcfunnyapp.ui.profile;
 
-import android.graphics.Bitmap;
 
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
+import com.example.vuivcfunnyapp.ui.profile.profile_interface.InterfaceProfile;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class ProfileUserModel implements Serializable {
+public class ProfileUserModel implements Parcelable {
 
     @SerializedName("id")
     @Expose
-    private String Id;
+    private String id;
 
     @SerializedName("numVideo")
     @Expose
-    private int numVideo;
+    private long numVideo;
 
     @SerializedName("numFollower")
     @Expose
-    private int numFollower;
+    private long numFollower;
 
     @SerializedName("numFollowing")
     @Expose
-    private int numFollowing;
+    private long numFollowing;
 
     @SerializedName("sex")
     @Expose
@@ -39,17 +52,17 @@ public class ProfileUserModel implements Serializable {
 
     @SerializedName("photo")
     @Expose
-    private Bitmap photo;
+    private String photo;
 
-    @SerializedName("userType")
-    @Expose
-    private UserTypeEnum userType;
-
+    DatabaseReference databaseReference;
+    FirebaseUser firebaseUser;
     public ProfileUserModel() {
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("ProfileUserModel");
     }
 
-    public ProfileUserModel(String id, int numVideo, int numFollower, int numFollowing, String sex, String nameUser, String ngaySinh, Bitmap photo, UserTypeEnum userType) {
-        Id = id;
+    public ProfileUserModel(String id, long numVideo, long numFollower, long numFollowing, String sex, String nameUser, String ngaySinh, String photo) {
+        this.id = id;
         this.numVideo = numVideo;
         this.numFollower = numFollower;
         this.numFollowing = numFollowing;
@@ -57,42 +70,49 @@ public class ProfileUserModel implements Serializable {
         this.nameUser = nameUser;
         this.ngaySinh = ngaySinh;
         this.photo = photo;
-        this.userType = userType;
+
     }
 
     public String getId() {
-        return Id;
+        return id;
     }
 
     public void setId(String id) {
-        Id = id;
+        this.id = id;
     }
 
-    public int getNumVideo() {
+    public long getNumVideo() {
         return numVideo;
     }
 
-    public void setNumVideo(int numVideo) {
+    public void setNumVideo(long numVideo) {
         this.numVideo = numVideo;
     }
 
-    public int getNumFollower() {
+    public long getNumFollower() {
         return numFollower;
     }
 
-    public void setNumFollower(int numFollower) {
+    public void setNumFollower(long numFollower) {
         this.numFollower = numFollower;
     }
 
-    public int getNumFollowing() {
+    public long getNumFollowing() {
         return numFollowing;
     }
 
-    public void setNumFollowing(int numFollowing) {
+    public void setNumFollowing(long numFollowing) {
         this.numFollowing = numFollowing;
     }
 
-    public String getSex() {
+    public ProfileUserModel(String id, String sex, String nameUser, String photo) {
+        this.id = id;
+        this.sex = sex;
+        this.nameUser = nameUser;
+        this.photo = photo;
+    }
+
+    public String isSex() {
         return sex;
     }
 
@@ -116,19 +136,47 @@ public class ProfileUserModel implements Serializable {
         this.ngaySinh = ngaySinh;
     }
 
-    public Bitmap getPhoto() {
+    public String getPhoto() {
         return photo;
     }
 
-    public void setPhoto(Bitmap photo) {
+    public void setPhoto(String photo) {
         this.photo = photo;
     }
 
-    public UserTypeEnum getUserType() {
-        return userType;
+    public void getDataProfile(final InterfaceProfile interfaceProfile)
+    {
+        ValueEventListener valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                DataSnapshot userdata = dataSnapshot.child(firebaseUser.getUid());
+                ProfileUserModel profileUserModel = userdata.getValue(ProfileUserModel.class);
+                interfaceProfile.getDataProfileInterface(profileUserModel);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+        databaseReference.addValueEventListener(valueEventListener);
     }
 
-    public void setUserType(UserTypeEnum userType) {
-        this.userType = userType;
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
+        parcel.writeLong(numFollower);
+        parcel.writeLong(numVideo);
+        parcel.writeLong(numFollowing);
+        parcel.writeString(nameUser);
+        parcel.writeString(sex);
+        parcel.writeString(ngaySinh);
+        parcel.writeString(photo);
     }
 }

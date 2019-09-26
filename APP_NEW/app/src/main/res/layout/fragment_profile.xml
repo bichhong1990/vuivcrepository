@@ -71,6 +71,7 @@
         android:drawableLeft="@drawable/idcard"
         android:text="Fb app id"
         android:textColor="#ffffff"
+        android:ellipsize="end"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtTenUser" />
 

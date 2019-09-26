@@ -12,6 +12,7 @@
         <activity android:name=".ForgotPassword"></activity>
         <activity android:name=".SignUp" />
         <activity android:name=".SignInEmail" />
+        <activity android:name=".ui.profile.FragmentEditProfile"/>
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"

@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.vuivcfunnyapp.ui.profile.ProfileUserModel;
+import com.example.vuivcfunnyapp.ui.profile.UserTypeEnum;
 import com.facebook.CallbackManager;
 import com.facebook.CallbackManager.Factory;
 import com.facebook.FacebookCallback;
@@ -28,6 +30,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.android.gms.auth.api.*;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,6 +42,9 @@ public class ActivityLogin extends AppCompatActivity implements GoogleApiClient.
     GoogleApiClient apiClient;
     FirebaseAuth firebaseAuth;
     LoginManager loginManager;
+
+    ProfileUserModel profileUserModel;
+    DatabaseReference databaseReference;
     CallbackManager mCallBackFacebook;
     List<String> permissionFacebook = Arrays.asList("email","public_profile");
     public static int CODE_LOGIN_GOOGLE = 100;
@@ -50,6 +57,7 @@ public class ActivityLogin extends AppCompatActivity implements GoogleApiClient.
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
 
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("ProfileUserModel");
         txt_LoginGoogle = findViewById(R.id.txt_GoogLe_Home);
         btn_LoginEmail = findViewById(R.id.btn_Login_Home);
         btn_LoginFacebook = findViewById(R.id.btn_login_facebook);
@@ -58,7 +66,7 @@ public class ActivityLogin extends AppCompatActivity implements GoogleApiClient.
         mCallBackFacebook = CallbackManager.Factory.create();
         loginManager = loginManager.getInstance();
         firebaseAuth = firebaseAuth.getInstance();
-        firebaseAuth.signOut();
+
         txt_LoginGoogle.setOnClickListener(this);
         btn_LoginFacebook.setOnClickListener(this);
         btn_LoginEmail.setOnClickListener(this);
@@ -187,10 +195,20 @@ public class ActivityLogin extends AppCompatActivity implements GoogleApiClient.
     @Override
     public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
         FirebaseUser user = firebaseAuth.getCurrentUser();
+
         if(user != null)
         {
-            Intent Home = new Intent(ActivityLogin.this, MainActivity.class);
-            startActivity(Home);
+            if(user.getUid().equals(databaseReference.getKey())) {
+                Intent Home = new Intent(ActivityLogin.this, MainActivity.class);
+                startActivity(Home);
+            }
+            else
+            {
+                profileUserModel = new ProfileUserModel(user.getUid(),0,0,0,"male",user.getDisplayName(),"1/1/1990",user.getPhotoUrl().toString());
+                databaseReference.child(user.getUid()).setValue(profileUserModel);
+                Intent Home = new Intent(ActivityLogin.this, MainActivity.class);
+                startActivity(Home);
+            }
         }
 
     }
