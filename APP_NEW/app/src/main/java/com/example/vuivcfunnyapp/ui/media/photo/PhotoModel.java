@@ -1,9 +1,9 @@
 package com.example.vuivcfunnyapp.ui.media.photo;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class PhotoModel {
+
 
     @SerializedName("id")
     @Expose

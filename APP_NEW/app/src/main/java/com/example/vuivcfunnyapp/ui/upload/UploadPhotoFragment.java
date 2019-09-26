@@ -1,5 +1,6 @@
 package com.example.vuivcfunnyapp.ui.upload;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -35,15 +36,30 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.example.vuivcfunnyapp.MainActivity;
 import com.example.vuivcfunnyapp.R;
+import com.example.vuivcfunnyapp.ui.media.photo.PhotoModel;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -55,6 +71,15 @@ public class UploadPhotoFragment extends Fragment {
     ImageView imvPhotoUpload;
     EditText edtCaptionUploadPhoto;
     TextView tvKQ;
+    FirebaseStorage storage;
+    StorageReference storageReference;
+    Uri filePath;
+    Bitmap bm;
+    String firstText = "";
+    String imgDownloadUrl = "vuivcimages/"+ UUID.randomUUID().toString() + ".jpg";
+    DatabaseReference url;
+    ArrayList<PhotoModel> photoList = new ArrayList<>();
+    FirebaseDatabase database;
 
     @Nullable
     @Override
@@ -65,13 +90,17 @@ public class UploadPhotoFragment extends Fragment {
               Button btnPhotoUploadGallery = root.findViewById(R.id.btnPhotoUploadGallery);
           edtCaptionUploadPhoto = root.findViewById(R.id.edtCaptionUploadPhoto);
         tvKQ = root.findViewById(R.id.tvKQ);
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
+        database  = FirebaseDatabase.getInstance();
+        url = database.getInstance().getReference().child("PhotoModel");
 
         imvPhotoUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent();
                 intent.setType("image/*");
-                intent.setAction(Intent.ACTION_PICK);
+                intent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), GALLERY);
             }
         });
@@ -79,15 +108,35 @@ public class UploadPhotoFragment extends Fragment {
         btnPhotoUploadGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
-
-
-//               Bitmap bm = drawTextToBitmap(getContext(),imvPhotoUpload.getId(),edtCaptionUploadPhoto.getText().toString());
-//               imvPhotoUpload.setImageBitmap(bm);
+                uploadBtmapImage(bm);
+                // Create Photo data
             }
         });
         return root;
+    }
+
+    private void DownloadImage(String downloadUrl)
+    {
+        storageReference.child(downloadUrl)
+                .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                // Got the download URL for 'photos/profile.png'
+                String getURL = uri.toString();
+                // Create Photo data
+                int id = (int) System.currentTimeMillis() / 1000;
+                PhotoModel photoModel = new PhotoModel(id,firstText,getURL,1);
+                //photoList.add(photoModel);
+                url.setValue(photoModel);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
+                Toast.makeText(getContext()
+                        , "Failed downloaded"+exception.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -95,9 +144,12 @@ public class UploadPhotoFragment extends Fragment {
         //super method removed
         if (resultCode == RESULT_OK) {
             if (requestCode == GALLERY) {
-                Bitmap bm = DrawTextToImage(data.getData(),edtCaptionUploadPhoto);
-                SaveImage(bm);
+
+                filePath = data.getData();
+                firstText = edtCaptionUploadPhoto.getText().toString();
+                 bm = DrawTextToImage(data.getData(),edtCaptionUploadPhoto);
                 imvPhotoUpload.setImageBitmap(bm);
+
             }
         }
     }
@@ -183,6 +235,81 @@ public class UploadPhotoFragment extends Fragment {
                 });
     }
 
+    private void uploadImage(Uri filePath) {
 
+        if(filePath != null)
+        {
+            final ProgressDialog progressDialog = new ProgressDialog(getContext());
+            progressDialog.setTitle("Uploading...");
+            progressDialog.show();
+
+
+            StorageReference ref = storageReference.child(imgDownloadUrl);
+            ref.putFile(filePath)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            progressDialog.dismiss();
+                            Toast.makeText(getContext(), "Uploaded", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            Toast.makeText(getContext()
+                                    , "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
+                                    .getTotalByteCount());
+                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
+                        }
+                    });
+        }
+    }
+
+    public void uploadBtmapImage(Bitmap bitmap) {
+
+        final ProgressDialog progressDialog = new ProgressDialog(getContext());
+        progressDialog.setTitle("Uploading...");
+        progressDialog.show();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+       StorageReference imagesRef = storageReference.child(imgDownloadUrl);
+
+        UploadTask uploadTask = imagesRef.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                progressDialog.dismiss();
+                Toast.makeText(getContext()
+                        , "Failed uploaded"+exception.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
+                        .getTotalByteCount());
+                progressDialog.setMessage("Uploading  "+(int)progress+"%");
+            }
+        })
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                progressDialog.dismiss();
+                Toast.makeText(getContext(), "Uploaded successfull", Toast.LENGTH_SHORT).show();
+                edtCaptionUploadPhoto.setText("");
+                imvPhotoUpload.setImageResource(R.drawable.vuivc_no_image_available);
+                DownloadImage(imgDownloadUrl);
+            }
+        });
+    }
 
     }
