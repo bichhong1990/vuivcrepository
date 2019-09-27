@@ -1,69 +1,58 @@
 package com.example.vuivcfunnyapp.ui.profile;
 
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
+
 
 import com.bumptech.glide.Glide;
 import com.example.vuivcfunnyapp.R;
 import com.example.vuivcfunnyapp.ui.dialog.DialogChangeImage;
 import com.example.vuivcfunnyapp.ui.profile.profile_interface.InterfaceProfile;
-import com.example.vuivcfunnyapp.ui.profile.profile_interface.TruyenThongTinUser;
-import com.google.android.gms.auth.api.signin.internal.Storage;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 
 
-import static android.app.Activity.RESULT_OK;
 
 public class FragmentEditProfile extends AppCompatActivity implements View.OnClickListener {
-    ImageView img_Quaylai,imgDoiAnh,imgAnhDaiDien;
-    EditText edt_ten,edt_ngaysinh;
-    RadioButton rbNam,rbNu;
-    TextView txtLuu,txt_ID;
+    ImageView img_Quaylai, imgDoiAnh, imgAnhDaiDien;
+    EditText edt_ten, edt_ngaysinh;
+    RadioButton rbNam, rbNu;
+    TextView txtLuu, txt_ID;
     String gioitinh;
     Bitmap image;
-    String tenUser,ngaySinh;
-    boolean sex=true;
+    String urlimagedaidien;
+    byte[] imagedata;
+    boolean sex = true;
     DatabaseReference databaseReference;
-    InterfaceProfile interfaceProfile;
     ProfileUserModel profileUser;
     StorageReference storageRef;
-
-    TruyenThongTinUser truyenThongTinUser;
-    public void FragmentEditProfile(TruyenThongTinUser truyenDuLieu) { //Bắn dữ liệu cho UserMain
-        this.truyenThongTinUser = truyenDuLieu;
-    }
 
 
     @Override
@@ -81,7 +70,9 @@ public class FragmentEditProfile extends AppCompatActivity implements View.OnCli
         txt_ID = findViewById(R.id.txt_id);
 
         profileUser = new ProfileUserModel();
+
         databaseReference = FirebaseDatabase.getInstance().getReference().child("ProfileUserModel");
+        storageRef = FirebaseStorage.getInstance().getReference().child("imagedaidien").child(profileUser.getId() + ".jpg");
 
     }
 
@@ -89,22 +80,38 @@ public class FragmentEditProfile extends AppCompatActivity implements View.OnCli
     public void onStart() {
         super.onStart();
 
-        interfaceProfile = new InterfaceProfile() {
+        img_Quaylai.setOnClickListener(this);
+        rbNu.setOnClickListener(this);
+        rbNam.setOnClickListener(this);
+        txtLuu.setOnClickListener(this);
+        imgAnhDaiDien.setOnClickListener(this);
+        //Nhan du lieu tu User Main
+        InterfaceProfile interfaceProfile = new InterfaceProfile() {
             @Override
-            public void getDataProfileInterface(ProfileUserModel profileUserModel) {
+            public void getDataProfileInterface(final ProfileUserModel profileUserModel) {
                 profileUser = profileUserModel;
-                txt_ID.setText(profileUser.getId()+"");
+                txt_ID.setText(profileUser.getId() + "");
                 edt_ten.setText(profileUser.getNameUser());
                 edt_ngaysinh.setText(profileUser.getNgaySinh());
-                Glide.with(getApplicationContext()).load(profileUser.getPhoto()).into(imgAnhDaiDien);
+                storageRef = FirebaseStorage.getInstance().getReference().child("imagedaidien").child(profileUser.getId() + ".jpg");
+                storageRef.getBytes(1024 * 1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        imgAnhDaiDien.setImageBitmap(bitmap);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Glide.with(getApplicationContext()).load(profileUserModel.getPhoto() + "/*.jpeg?height=500").into(imgAnhDaiDien);
+                    }
+                });
 
-                if(profileUser.isSex().equalsIgnoreCase("male"))
-                {
+                if (profileUser.isSex().equalsIgnoreCase("male")) {
                     CheckBuild(rbNam);
                     rbNam.setChecked(true);
                     CheckBuild(rbNu);
-                }
-                else {
+                } else {
                     CheckBuild(rbNu);
                     rbNu.setChecked(true);
                     CheckBuild(rbNam);
@@ -113,20 +120,11 @@ public class FragmentEditProfile extends AppCompatActivity implements View.OnCli
         };
         profileUser.getDataProfile(interfaceProfile);
 
-        img_Quaylai.setOnClickListener(this);
-        rbNu.setOnClickListener(this);
-        rbNam.setOnClickListener(this);
-        txtLuu.setOnClickListener(this);
-        imgAnhDaiDien.setOnClickListener(this);
-        //Nhan du lieu tu User Main
-
-
     }
 
     @Override
     public void onClick(View view) {
-        switch (view.getId())
-        {
+        switch (view.getId()) {
             case R.id.img_QuayLai:
                 getFragmentManager().popBackStack();
                 break;
@@ -148,21 +146,20 @@ public class FragmentEditProfile extends AppCompatActivity implements View.OnCli
                 profileUser.setNgaySinh(edt_ngaysinh.getText().toString());
 
 
-                HashMap<String,Object> hashMap = new HashMap<>();
-                hashMap.put("nameUser",profileUser.getNameUser());
-                hashMap.put("id",profileUser.getId());
-                hashMap.put("ngaySinh",profileUser.getNgaySinh());
-                hashMap.put("numFollower",profileUser.getNumFollower());
-                hashMap.put("numFollowing",profileUser.getNumFollowing());
-                hashMap.put("numVideo",profileUser.getNumVideo());
-                hashMap.put("photo",profileUser.getPhoto());
-                hashMap.put("sex",profileUser.isSex());
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("nameUser", profileUser.getNameUser());
+                hashMap.put("id", profileUser.getId());
+                hashMap.put("ngaySinh", profileUser.getNgaySinh());
+                hashMap.put("numFollower", profileUser.getNumFollower());
+                hashMap.put("numFollowing", profileUser.getNumFollowing());
+                hashMap.put("numVideo", profileUser.getNumVideo());
+                profileUser.setPhoto(urlimagedaidien);
+                hashMap.put("photo", profileUser.getPhoto());
+                hashMap.put("sex", profileUser.isSex());
 
-                HashMap<String,Object> key = new HashMap<>();
-                key.put(profileUser.getId(),hashMap);
-
+                HashMap<String, Object> key = new HashMap<>();
+                key.put(profileUser.getId(), hashMap);
                 databaseReference.updateChildren(key);
-
                 finish();
                 break;
             case R.id.img_DoiAnh:
@@ -174,24 +171,20 @@ public class FragmentEditProfile extends AppCompatActivity implements View.OnCli
 
     private void ChangeAnh() {
         DialogChangeImage dialog = new DialogChangeImage();
-        dialog.show(getSupportFragmentManager(),null);
-        }
+        dialog.show(getSupportFragmentManager(), null);
+    }
 
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode,resultCode,data);
-        if(requestCode == 300)
-        {
-            if(resultCode == RESULT_OK)
-            {
-               image = (Bitmap) data.getExtras().get("data");
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 300) {
+            if (resultCode == RESULT_OK) {
+                image = (Bitmap) data.getExtras().get("data");
                 //profileUser.setPhoto(image);
             }
-        }
-        else if(requestCode ==200)
-        {
-            if(resultCode==RESULT_OK) {
+        } else if (requestCode == 200) {
+            if (resultCode == RESULT_OK) {
                 Uri imageUri = data.getData();
                 try {
                     image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
@@ -200,11 +193,47 @@ public class FragmentEditProfile extends AppCompatActivity implements View.OnCli
                 }
             }
         }
+        if(image == null)
+        {
+            if(storageRef.child("imagedaidien").child(profileUser.getId() + ".jpg").getDownloadUrl() == null) {
+                Glide.with(getApplicationContext()).load(profileUser.getPhoto() + "/*.jpeg?height=500").into(imgAnhDaiDien);
+            }
+            else
+            {
+                long ONEMEGABYTE = 1024 * 1024;
+                storageRef.getBytes(ONEMEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        imgAnhDaiDien.setImageBitmap(bitmap);
+                    }
+                });
+            }
+        }
+        else {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            image.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+            imagedata = byteArrayOutputStream.toByteArray();
+            storageRef = FirebaseStorage.getInstance().getReference().child("imagedaidien").child(profileUser.getId() + ".jpg");
+            storageRef.putBytes(imagedata);
+            urlimagedaidien = profileUser.getId() + ".jpg";
+            //lay anh
+            long ONEMEGABYTE = 1024 * 1024;
+            storageRef.getBytes(ONEMEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                @Override
+                public void onSuccess(byte[] bytes) {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    imgAnhDaiDien.setImageBitmap(bitmap);
+                }
+            });
+        }
+
+
 
     }
+
     private void CheckBuild(RadioButton radioButton) {
-        if(Build.VERSION.SDK_INT>=21)
-        {
+        if (Build.VERSION.SDK_INT >= 21) {
 
             ColorStateList colorStateList = new ColorStateList(
                     new int[][]{
@@ -212,10 +241,10 @@ public class FragmentEditProfile extends AppCompatActivity implements View.OnCli
                             new int[]{-android.R.attr.state_enabled}, //disabled
                             new int[]{android.R.attr.state_enabled} //enabled
                     },
-                    new int[] {
+                    new int[]{
 
                             Color.WHITE //disabled
-                            ,Color.YELLOW //enabled
+                            , Color.YELLOW //enabled
 
                     }
             );

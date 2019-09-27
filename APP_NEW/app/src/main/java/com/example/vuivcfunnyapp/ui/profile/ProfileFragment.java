@@ -4,6 +4,8 @@ package com.example.vuivcfunnyapp.ui.profile;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -29,14 +31,13 @@ import com.bumptech.glide.Glide;
 import com.example.vuivcfunnyapp.ActivityLogin;
 import com.example.vuivcfunnyapp.R;
 import com.example.vuivcfunnyapp.ui.profile.profile_interface.InterfaceProfile;
-import com.example.vuivcfunnyapp.ui.profile.profile_interface.TruyenThongTinUser;
+import com.example.vuivcfunnyapp.ui.profile.profile_interface.NhanDuLieuTuUserMain;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
-import java.io.IOException;
-import java.net.URL;
 
 public class ProfileFragment extends Fragment
 {
@@ -45,11 +46,11 @@ public class ProfileFragment extends Fragment
     ImageView imgAnhdaidien;
     public TextView txt_SoLuongVideo, txt_SoluongFollower, txt_SoluongFollowing, txtTenUser, txtID,txtSex, txtDate;
     long SoluongFollower,SoLuongFollowing,SoLuongVideo;
-    FragmentEditProfile fragmentEditProfile = new FragmentEditProfile();
-    private String mTitle;
     FirebaseAuth firebaseAuth;
     ProfileUserModel dataProfile;
     InterfaceProfile interfaceProfile;
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -71,7 +72,6 @@ public class ProfileFragment extends Fragment
 
         firebaseAuth = firebaseAuth.getInstance();
         dataProfile = new ProfileUserModel();
-
 
         //fragmentEditProfile.FragmentEditProfile(this);//lắng nghe du lieu tu Edit profile
         txt_SoluongFollower.setText(SoluongFollower+"");
@@ -128,25 +128,36 @@ public class ProfileFragment extends Fragment
     @Override
     public void onStart() {
         super.onStart();
-        interfaceProfile = new InterfaceProfile() {
-            @Override
-            public void getDataProfileInterface(ProfileUserModel profileUserModel) {
-                txtTenUser.setText(profileUserModel.getNameUser()+"");
-                txtID.setText(profileUserModel.getId()+"");
-                txtSex.setText(profileUserModel.isSex()+"");
-                txtDate.setText(profileUserModel.getNgaySinh()+"");
-                Glide.with(getContext()).load(profileUserModel.getPhoto()+"/*.jpeg?height=500").into(imgAnhdaidien);
-                dataProfile = profileUserModel;
-            }
-        };
+            interfaceProfile = new InterfaceProfile() {
+                @Override
+                public void getDataProfileInterface(final ProfileUserModel profileUserModel) {
+                    txtTenUser.setText(profileUserModel.getNameUser() + "");
+                    txtID.setText(profileUserModel.getId() + "");
+                    txtSex.setText(profileUserModel.isSex() + "");
+                    txtDate.setText(profileUserModel.getNgaySinh() + "");
+                    StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("imagedaidien").child(profileUserModel.getId() + ".jpg");
+                    storageReference.getBytes(1024*1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                        @Override
+                        public void onSuccess(byte[] bytes) {
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                            imgAnhdaidien.setImageBitmap(bitmap);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Glide.with(getContext()).load(profileUserModel.getPhoto() + "/*.jpeg?height=500").into(imgAnhdaidien);
+                        }
+                    });
 
-        dataProfile.getDataProfile(interfaceProfile);
+                }
+            };
+            dataProfile.getDataProfile(interfaceProfile);
 
-    }
-    private void ChuyenFragment (Fragment fragment){
-        getActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, fragment,"editprofile").addToBackStack("back").commit();
-
-    }
-
+        }
 
 }
+
+
+
+
+

@@ -73,6 +73,30 @@ public class ProfileUserModel implements Parcelable {
 
     }
 
+    protected ProfileUserModel(Parcel in) {
+        id = in.readString();
+        numVideo = in.readLong();
+        numFollower = in.readLong();
+        numFollowing = in.readLong();
+        sex = in.readString();
+        nameUser = in.readString();
+        ngaySinh = in.readString();
+        photo = in.readString();
+        firebaseUser = in.readParcelable(FirebaseUser.class.getClassLoader());
+    }
+
+    public static final Creator<ProfileUserModel> CREATOR = new Creator<ProfileUserModel>() {
+        @Override
+        public ProfileUserModel createFromParcel(Parcel in) {
+            return new ProfileUserModel(in);
+        }
+
+        @Override
+        public ProfileUserModel[] newArray(int size) {
+            return new ProfileUserModel[size];
+        }
+    };
+
     public String getId() {
         return id;
     }
@@ -151,7 +175,7 @@ public class ProfileUserModel implements Parcelable {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 DataSnapshot userdata = dataSnapshot.child(firebaseUser.getUid());
                 ProfileUserModel profileUserModel = userdata.getValue(ProfileUserModel.class);
-                interfaceProfile.getDataProfileInterface(profileUserModel);
+                    interfaceProfile.getDataProfileInterface(profileUserModel);
             }
 
             @Override

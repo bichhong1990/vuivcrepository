@@ -198,7 +198,7 @@ public class ActivityLogin extends AppCompatActivity implements GoogleApiClient.
 
         if(user != null)
         {
-            if(user.getUid().equals(databaseReference.getKey())) {
+            if(databaseReference.getKey().equals(user.getUid())) {
                 Intent Home = new Intent(ActivityLogin.this, MainActivity.class);
                 startActivity(Home);
             }

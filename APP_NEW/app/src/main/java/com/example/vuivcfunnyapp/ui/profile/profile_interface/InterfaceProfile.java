@@ -4,5 +4,5 @@ import com.example.vuivcfunnyapp.ui.profile.ProfileUserModel;
 
 public interface InterfaceProfile {
 
-    void getDataProfileInterface(ProfileUserModel profileUserModel);
+    void getDataProfileInterface(ProfileUserModel profileUserModel) ;
 }

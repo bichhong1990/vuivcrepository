@@ -2,6 +2,9 @@ package com.example.vuivcfunnyapp.ui.profile.profile_interface;
 
 import android.graphics.Bitmap;
 
+import com.example.vuivcfunnyapp.ui.profile.ProfileFragment;
+import com.example.vuivcfunnyapp.ui.profile.ProfileUserModel;
+
 public interface NhanDuLieuTuUserMain {
-    public void GetUserData(String tenuser, String ngaysinh, boolean gioitinh, Bitmap bitmap);
+    void GetUserData(ProfileUserModel profileUserModel, String ChuoiUrl) ;
 }
