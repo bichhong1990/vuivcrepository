@@ -41,8 +41,11 @@ import com.example.vuivcfunnyapp.R;
 import com.example.vuivcfunnyapp.ui.media.photo.PhotoModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -80,6 +83,7 @@ public class UploadPhotoFragment extends Fragment {
     DatabaseReference url;
     ArrayList<PhotoModel> photoList = new ArrayList<>();
     FirebaseDatabase database;
+    long totalCount = 0;
 
     @Nullable
     @Override
@@ -87,31 +91,42 @@ public class UploadPhotoFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_upload_photo,container,false);
 
           imvPhotoUpload = root.findViewById(R.id.imvPhotoUpload);
-              Button btnPhotoUploadGallery = root.findViewById(R.id.btnPhotoUploadGallery);
-          edtCaptionUploadPhoto = root.findViewById(R.id.edtCaptionUploadPhoto);
-        tvKQ = root.findViewById(R.id.tvKQ);
-        storage = FirebaseStorage.getInstance();
-        storageReference = storage.getReference();
-        database  = FirebaseDatabase.getInstance();
-        url = database.getInstance().getReference().child("PhotoModel");
+          Button btnTakePhotoFromGallery = root.findViewById(R.id.btnTakePhotoFromGallery);
+          Button btnPhotoUploadGallery = root.findViewById(R.id.btnPhotoUploadGallery);
+          Button btnTakePhotoFromCamera = root.findViewById(R.id.btnTakePhotoFromCamera);
 
-        imvPhotoUpload.setOnClickListener(new View.OnClickListener() {
+            edtCaptionUploadPhoto = root.findViewById(R.id.edtCaptionUploadPhoto);
+            tvKQ = root.findViewById(R.id.tvKQ);
+            storage = FirebaseStorage.getInstance();
+            storageReference = storage.getReference();
+            database  = FirebaseDatabase.getInstance();
+            url = database.getInstance().getReference().child("PhotoModel");
+
+        btnTakePhotoFromGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Select Picture"), GALLERY);
+                Intent intentGallery = new Intent();
+                intentGallery.setType("image/*");
+                intentGallery.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intentGallery, "Take a photo"), GALLERY);
             }
         });
 
-        btnPhotoUploadGallery.setOnClickListener(new View.OnClickListener() {
+        btnTakePhotoFromCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                uploadBtmapImage(bm);
-                // Create Photo data
+                Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intentCamera,CAMERA);
             }
         });
+
+            btnPhotoUploadGallery.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    uploadBtmapImage(bm);
+                    // Create Photo data
+                }
+            });
         return root;
     }
 
@@ -122,12 +137,20 @@ public class UploadPhotoFragment extends Fragment {
             @Override
             public void onSuccess(Uri uri) {
                 // Got the download URL for 'photos/profile.png'
-                String getURL = uri.toString();
-                // Create Photo data
-                int id = (int) System.currentTimeMillis() / 1000;
-                PhotoModel photoModel = new PhotoModel(id,firstText,getURL,1);
-                //photoList.add(photoModel);
-                url.setValue(photoModel);
+                final String getURL = uri.toString();
+                url.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        totalCount = dataSnapshot.getChildrenCount();
+                        //int id = (int) System.currentTimeMillis() / 1000;
+                        url.child("" + totalCount).setValue(new PhotoModel((int)totalCount + 1,firstText,getURL,1));
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -143,13 +166,12 @@ public class UploadPhotoFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super method removed
         if (resultCode == RESULT_OK) {
-            if (requestCode == GALLERY) {
+            if (requestCode == GALLERY || requestCode == CAMERA) {
 
                 filePath = data.getData();
                 firstText = edtCaptionUploadPhoto.getText().toString();
                  bm = DrawTextToImage(data.getData(),edtCaptionUploadPhoto);
                 imvPhotoUpload.setImageBitmap(bm);
-
             }
         }
     }
