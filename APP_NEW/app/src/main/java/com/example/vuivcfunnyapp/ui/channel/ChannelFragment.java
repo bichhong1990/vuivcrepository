@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 
 public class ChannelFragment extends Fragment {
 
-    TextView tvSearchChannel;
+    EditText edtSearchChannel;
     RecyclerView recycleViewChannelFullList;
     ArrayList<ChannelModel> lstChannel = new ArrayList<>();
     ChannelAdapter channelAdapter;
@@ -29,9 +30,9 @@ public class ChannelFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_channel,container,false);
-        tvSearchChannel = view.findViewById(R.id.tvSearchChannel);
+        edtSearchChannel = view.findViewById(R.id.edtSearchChannel);
         recycleViewChannelFullList = view.findViewById(R.id.recycleViewChannelFullList);
-        recycleViewChannelFullList.setLayoutManager(new GridLayoutManager(getContext(),3));
+        recycleViewChannelFullList.setLayoutManager(new GridLayoutManager(getContext(),2));
         channelAdapter = new ChannelAdapter(lstChannel);
         recycleViewChannelFullList.setAdapter(channelAdapter);
         LoadChannelList();
@@ -41,6 +42,7 @@ public class ChannelFragment extends Fragment {
     public void LoadChannelList()
     {
         lstChannel.clear();
+        lstChannel.add(new ChannelModel("bansaohoanhao","Hashtag HOT"));
         lstChannel.add(new ChannelModel("bansaohoanhao","Hashtag HOT"));
         lstChannel.add(new ChannelModel("bansaohoanhao","Hashtag HOT"));
         lstChannel.add(new ChannelModel("bansaohoanhao","Hashtag HOT"));

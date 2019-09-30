@@ -43,5 +43,33 @@
         >
     </TextView>
 
+    <TextView
+        android:id="@+id/tvLikePhoto"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:gravity="center_vertical|center_horizontal"
+        android:textColor="#FFFFFF"
+        app:layout_constraintDimensionRatio="1:1"
+        android:drawableTop="@drawable/icon_heart"
+        app:layout_constraintLeft_toLeftOf="@+id/tvSharePhoto"
+        app:layout_constraintTop_toBottomOf="@+id/tvSharePhoto"
+        app:layout_constraintRight_toRightOf="@+id/tvSharePhoto"
+        >
+    </TextView>
+
+    <TextView
+        android:id="@+id/tvCommentPhoto"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:gravity="center_vertical|center_horizontal"
+        android:textColor="#FFFFFF"
+        app:layout_constraintDimensionRatio="1:1"
+        android:drawableTop="@drawable/icon_comment"
+        app:layout_constraintLeft_toLeftOf="@+id/tvLikePhoto"
+        app:layout_constraintTop_toBottomOf="@+id/tvLikePhoto"
+        app:layout_constraintRight_toRightOf="@+id/tvLikePhoto"
+        >
+    </TextView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
