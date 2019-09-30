@@ -91,9 +91,15 @@ public class VideoItemFragment extends Fragment {
             tvShareVideo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    VideoShareDialogFragment videoShareDialogFragment = VideoShareDialogFragment.newInstance("Share video with",
-                            R.layout.fragment_video_sharing,videoUrl,videoTitle);
-                    videoShareDialogFragment.show(getChildFragmentManager(), "Share video with");
+                    Intent share = new Intent(Intent.ACTION_SEND);
+                    share.setType("text/plain");
+                    share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+                    share.putExtra(Intent.EXTRA_SUBJECT, videoTitle);
+                    share.putExtra(Intent.EXTRA_TEXT, videoUrl);
+                    startActivity(Intent.createChooser(share, videoTitle));
+//                    VideoShareDialogFragment videoShareDialogFragment = VideoShareDialogFragment.newInstance("Share video with",
+//                            R.layout.fragment_video_sharing,videoUrl,videoTitle);
+//                    videoShareDialogFragment.show(getChildFragmentManager(), "Share video with");
                 }
             });
 
