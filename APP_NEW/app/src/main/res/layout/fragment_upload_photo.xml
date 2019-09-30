@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -16,16 +17,16 @@
         >
 
     </TextView>
+
     <EditText
         android:id="@+id/edtCaptionUploadPhoto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
         android:hint="Caption upload..."
-        app:layout_constraintTop_toBottomOf="@+id/tvCreatePhotoStep1"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        >
+        app:layout_constraintTop_toBottomOf="@+id/tvCreatePhotoStep1">
 
     </EditText>
     <TextView
@@ -68,8 +69,8 @@
      <ImageView
         android:id="@+id/imvPhotoUpload"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-         android:layout_margin="20dp"
+        android:layout_height="200dp"
+         android:layout_margin="10dp"
         android:src="@drawable/vuivc_no_image_available"
         android:background="#000000"
          app:layout_constraintTop_toBottomOf="@+id/btnTakePhotoFromGallery"
@@ -82,7 +83,7 @@
     android:id="@+id/btnPhotoUploadGallery"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="15dp"
+    android:layout_marginTop="10dp"
     android:text="Save"
     android:textStyle="bold"
     android:textAppearance="?android:textAppearanceMedium"

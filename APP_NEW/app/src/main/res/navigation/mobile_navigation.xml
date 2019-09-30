@@ -20,7 +20,7 @@
     <fragment
         android:id="@+id/navigation_dashboard"
         android:name="com.example.vuivcfunnyapp.ui.dashboard.DashboardFragment"
-        android:label="Add"
+        android:label="Upload"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
