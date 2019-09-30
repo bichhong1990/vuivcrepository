@@ -68,12 +68,9 @@ import static android.app.Activity.RESULT_OK;
 
 public class UploadPhotoFragment extends Fragment {
 
-    private static final String IMAGE_DIRECTORY = "/vuivc";
     private int GALLERY = 1, CAMERA = 2;
-    String photoName = new Date().toString();
     ImageView imvPhotoUpload;
     EditText edtCaptionUploadPhoto;
-    TextView tvKQ;
     FirebaseStorage storage;
     StorageReference storageReference;
     Uri filePath;
@@ -96,7 +93,6 @@ public class UploadPhotoFragment extends Fragment {
           Button btnTakePhotoFromCamera = root.findViewById(R.id.btnTakePhotoFromCamera);
 
             edtCaptionUploadPhoto = root.findViewById(R.id.edtCaptionUploadPhoto);
-            tvKQ = root.findViewById(R.id.tvKQ);
             storage = FirebaseStorage.getInstance();
             storageReference = storage.getReference();
             database  = FirebaseDatabase.getInstance();
@@ -124,7 +120,6 @@ public class UploadPhotoFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     uploadBtmapImage(bm);
-                    // Create Photo data
                 }
             });
         return root;
@@ -222,39 +217,6 @@ public class UploadPhotoFragment extends Fragment {
         }
 
         return newBitmap;
-    }
-
-    private void SaveImage(Bitmap bmImg)
-    {
-        String root = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES).toString();
-        File myDir = new File(root + "/saved_images");
-        myDir.mkdirs();
-        Random generator = new Random();
-
-        int n = 10000;
-        n = generator.nextInt(n);
-        String fname = "Image-"+ n +".jpg";
-        File file = new File (myDir, fname);
-        if (file.exists ()) file.delete ();
-        try {
-            FileOutputStream out = new FileOutputStream(file);
-            bmImg.compress(Bitmap.CompressFormat.JPEG, 90, out);
-            out.flush();
-            out.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-// Tell the media scanner about the new file so that it is
-// immediately available to the user.
-        MediaScannerConnection.scanFile(getContext(), new String[]{file.toString()}, null,
-                new MediaScannerConnection.OnScanCompletedListener() {
-                    public void onScanCompleted(String path, Uri uri) {
-                        Log.i("ExternalStorage", "Scanned " + path + ":");
-                        Log.i("ExternalStorage", "-> uri=" + uri);
-                    }
-                });
     }
 
     private void uploadImage(Uri filePath) {
