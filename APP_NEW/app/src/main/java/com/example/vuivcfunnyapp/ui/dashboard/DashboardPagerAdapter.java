@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import com.example.vuivcfunnyapp.ui.upload.UploadPhotoFragment;
+import com.example.vuivcfunnyapp.ui.upload.UploadPhotoInternetFragment;
 
 public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -19,7 +20,7 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
         switch (position)
         {
             case 0: return new UploadPhotoFragment();
-            case 1: return new UploadPhotoFragment();
+            case 1: return new UploadPhotoInternetFragment();
         }
         return new UploadPhotoFragment();
     }
@@ -35,8 +36,8 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
     {
         switch (position)
         {
-            case 0: return "Upload photo";
-            case 1: return "Upload video";
+            case 0: return "Ảnh tôi chế";
+            case 1: return "Ảnh sưu tầm";
         }
         return "";
     }

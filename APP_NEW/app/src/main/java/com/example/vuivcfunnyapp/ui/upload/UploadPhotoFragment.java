@@ -166,11 +166,11 @@ public class UploadPhotoFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super method removed
         if (resultCode == RESULT_OK) {
-            if (requestCode == GALLERY || requestCode == CAMERA) {
+            if (requestCode == GALLERY) {
 
                 filePath = data.getData();
                 firstText = edtCaptionUploadPhoto.getText().toString();
-                 bm = DrawTextToImage(data.getData(),edtCaptionUploadPhoto);
+                bm = DrawTextToImage(data.getData(),edtCaptionUploadPhoto);
                 imvPhotoUpload.setImageBitmap(bm);
             }
         }

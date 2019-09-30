@@ -1,6 +1,7 @@
 package com.example.vuivcfunnyapp.ui.media.photo;
 
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,45 +36,50 @@ public class PhotoVerticalFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_vertical_viewpager,container,false);
         final VerticalViewPager verticalviewpager = root.findViewById(R.id.verticalviewpager);
 
-
-        ApiUtils.GetMediaService().GetPhotoList().enqueue(new Callback<List<PhotoModel>>() {
+        FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference =    mFirebaseDatabase.getReference().child("PhotoModel");
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onResponse(Call<List<PhotoModel>> call, Response<List<PhotoModel>> response) {
-                if(response.isSuccessful()){
-                    listPhoto = response.body();
-                    if(listPhoto != null && listPhoto.size() > 0)
-                    {
-                        photoVerticalPagerAdapter  = new PhotoVerticalPagerAdapter(getChildFragmentManager(),listPhoto);
-                        verticalviewpager.setAdapter(photoVerticalPagerAdapter);
-                        photoVerticalPagerAdapter.notifyDataSetChanged();
-                    }
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+               for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
+                    int id = Integer.parseInt(singleSnapshot.child("id").getValue().toString());
+                    String title = singleSnapshot.child("imageTitle").getValue().toString();
+                    String imageUrl = singleSnapshot.child("imageUrl").getValue().toString();
+                    int userId = Integer.parseInt(singleSnapshot.child("userId").getValue().toString());
+                    listPhoto.add(new PhotoModel(id,title,imageUrl,userId));
                 }
+
+                if(listPhoto != null && listPhoto.size() > 0)
+                {
+                    photoVerticalPagerAdapter  = new PhotoVerticalPagerAdapter(getChildFragmentManager(),listPhoto);
+                    verticalviewpager.setAdapter(photoVerticalPagerAdapter);
+                    photoVerticalPagerAdapter.notifyDataSetChanged();
+                }
+
             }
             @Override
-            public void onFailure(Call<List<PhotoModel>> call, Throwable t) {
-                Log.d("Error","" + t.getMessage());
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
 
-//        FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
-//        DatabaseReference databaseReference =    mFirebaseDatabase.getReference().child("PhotoModel");
-//        databaseReference.addValueEventListener(new ValueEventListener() {
+//        ApiUtils.GetMediaService().GetPhotoList().enqueue(new Callback<List<PhotoModel>>() {
 //            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//
-//                for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-//                   // PhotoModel photoModelFirebase = childDataSnapshot.getValue(PhotoModel.class);
-//                    //listPhoto.add(photoModelFirebase);
-//                    int id = Integer.parseInt(childDataSnapshot.child("id").getValue().toString());
-//                    String title = childDataSnapshot.child("imageTitle").getValue().toString();
-//                    String imageUrl = childDataSnapshot.child("imageUrl").getValue().toString();
-//                    int userId = Integer.parseInt(childDataSnapshot.child("userId").getValue().toString());
-//                    listPhoto.add(new PhotoModel(id,title,imageUrl,userId));
+//            public void onResponse(Call<List<PhotoModel>> call, Response<List<PhotoModel>> response) {
+//                if(response.isSuccessful()){
+//                    listPhoto.addAll(response.body());
+//                    if(listPhoto != null && listPhoto.size() > 0)
+//                    {
+//                        photoVerticalPagerAdapter  = new PhotoVerticalPagerAdapter(getChildFragmentManager(),listPhoto);
+//                        verticalviewpager.setAdapter(photoVerticalPagerAdapter);
+//                        photoVerticalPagerAdapter.notifyDataSetChanged();
+//                    }
 //                }
 //            }
 //            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
+//            public void onFailure(Call<List<PhotoModel>> call, Throwable t) {
+//                Log.d("Error","" + t.getMessage());
 //            }
 //        });
 
