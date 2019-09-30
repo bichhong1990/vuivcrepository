@@ -111,8 +111,13 @@ public class UploadPhotoFragment extends Fragment {
         btnTakePhotoFromCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(intentCamera,CAMERA);
+                Intent pictureIntent = new Intent(
+                        MediaStore.ACTION_IMAGE_CAPTURE
+                );
+                if(pictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivityForResult(pictureIntent,
+                            CAMERA);
+                }
             }
         });
 
@@ -160,12 +165,19 @@ public class UploadPhotoFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super method removed
-        if (resultCode == RESULT_OK) {
-            if (requestCode == GALLERY) {
+        if (requestCode == GALLERY && resultCode == RESULT_OK ) {
 
+            filePath = data.getData();
+            firstText = edtCaptionUploadPhoto.getText().toString();
+            bm = DrawTextToImage(data.getData(),edtCaptionUploadPhoto);
+            imvPhotoUpload.setImageBitmap(bm);
+        }
+        else if(requestCode == CAMERA && resultCode == RESULT_OK)
+        {
+            if (data != null && data.getExtras() != null) {
                 filePath = data.getData();
                 firstText = edtCaptionUploadPhoto.getText().toString();
-                bm = DrawTextToImage(data.getData(),edtCaptionUploadPhoto);
+                bm = (Bitmap) data.getExtras().get("data");
                 imvPhotoUpload.setImageBitmap(bm);
             }
         }
