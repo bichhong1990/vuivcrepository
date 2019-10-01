@@ -1,9 +1,11 @@
 package com.example.vuivcfunnyapp.ui.upload;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -33,6 +35,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -75,6 +78,7 @@ public class UploadPhotoFragment extends Fragment {
     StorageReference storageReference;
     Uri filePath;
     Bitmap bm;
+    Intent pictureIntent;
     String firstText = "";
     String imgDownloadUrl = "vuivcimages/"+ UUID.randomUUID().toString() + ".jpg";
     DatabaseReference url;
@@ -111,14 +115,18 @@ public class UploadPhotoFragment extends Fragment {
         btnTakePhotoFromCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent pictureIntent = new Intent(
+                pictureIntent = new Intent(
                         MediaStore.ACTION_IMAGE_CAPTURE
                 );
+               if(pictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                   if(ContextCompat.checkSelfPermission(getContext(),Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED)
+                   {
+                        requestPermissions(new String[]{Manifest.permission.CAMERA},
+                                CAMERA);
+                   }
 
-                if(pictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                    startActivityForResult(pictureIntent,
-                            CAMERA);
-                }
+               }
+
             }
         });
 
@@ -309,4 +317,15 @@ public class UploadPhotoFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == CAMERA)
+        {
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                startActivityForResult(pictureIntent, CAMERA);
+            }
+        }
     }
+}
