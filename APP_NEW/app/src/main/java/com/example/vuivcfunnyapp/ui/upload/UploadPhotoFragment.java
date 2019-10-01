@@ -35,7 +35,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -90,7 +89,7 @@ public class UploadPhotoFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-         final View root = inflater.inflate(R.layout.fragment_upload_photo,container,false);
+        View root = inflater.inflate(R.layout.fragment_upload_photo,container,false);
 
           imvPhotoUpload = root.findViewById(R.id.imvPhotoUpload);
           Button btnTakePhotoFromGallery = root.findViewById(R.id.btnTakePhotoFromGallery);
@@ -115,16 +114,22 @@ public class UploadPhotoFragment extends Fragment {
 
         btnTakePhotoFromCamera.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
-                pictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if(pictureIntent.resolveActivity(getActivity().getPackageManager()) != null)
-                {
-                    if(ContextCompat.checkSelfPermission(getContext(),Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED)
-                    {
-                        requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA);
-                    }
-                }
+            public void onClick(View view) {
+                pictureIntent = new Intent(
+                        MediaStore.ACTION_IMAGE_CAPTURE
+                );
+               if(pictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                   if(ContextCompat.checkSelfPermission(getContext(),Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED)
+                   {
+                        requestPermissions(new String[]{Manifest.permission.CAMERA},
+                                CAMERA);
+                   }
+                   else {
+                       startActivityForResult(pictureIntent, CAMERA);
+                   }
+
+               }
+
             }
         });
 
@@ -184,8 +189,7 @@ public class UploadPhotoFragment extends Fragment {
             if (data != null && data.getExtras() != null) {
                 filePath = data.getData();
                 firstText = edtCaptionUploadPhoto.getText().toString();
-                //bm = (Bitmap) data.getExtras().get("data");
-                bm = DrawTextToImage(filePath,edtCaptionUploadPhoto);
+                bm = (Bitmap) data.getExtras().get("data");
                 imvPhotoUpload.setImageBitmap(bm);
             }
         }
