@@ -72,4 +72,6 @@
     <string name="forgotpassword">Quen mat khau</string>
     <string name="Sigin">Dang nhap</string>
     <string name="thongbaoloi">Ban chua nhap</string>
+    <string name="Loading">Đang tải..</string>
+    <string name="version">Phiên bản 1.0</string>
 </resources>
