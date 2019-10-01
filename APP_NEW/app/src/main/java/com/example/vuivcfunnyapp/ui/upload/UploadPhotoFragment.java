@@ -114,6 +114,7 @@ public class UploadPhotoFragment extends Fragment {
                 Intent pictureIntent = new Intent(
                         MediaStore.ACTION_IMAGE_CAPTURE
                 );
+
                 if(pictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                     startActivityForResult(pictureIntent,
                             CAMERA);
