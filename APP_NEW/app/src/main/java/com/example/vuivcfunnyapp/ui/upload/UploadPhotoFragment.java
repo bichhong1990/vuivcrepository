@@ -124,6 +124,9 @@ public class UploadPhotoFragment extends Fragment {
                         requestPermissions(new String[]{Manifest.permission.CAMERA},
                                 CAMERA);
                    }
+                   else {
+                       startActivityForResult(pictureIntent, CAMERA);
+                   }
 
                }
 
