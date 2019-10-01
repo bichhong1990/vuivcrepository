@@ -79,8 +79,6 @@ public class UploadPhotoFragment extends Fragment {
     Uri filePath;
     Bitmap bm;
     Intent pictureIntent;
-    String firstText = "";
-    String imgDownloadUrl = "vuivcimages/"+ UUID.randomUUID().toString() + ".jpg";
     DatabaseReference url;
     ArrayList<PhotoModel> photoList = new ArrayList<>();
     FirebaseDatabase database;
@@ -105,44 +103,64 @@ public class UploadPhotoFragment extends Fragment {
         btnTakePhotoFromGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intentGallery = new Intent();
-                intentGallery.setType("image/*");
-                intentGallery.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intentGallery, "Take a photo"), GALLERY);
+                if(edtCaptionUploadPhoto.getText().toString() != null && !edtCaptionUploadPhoto.getText().toString().isEmpty())
+                {
+                    Intent intentGallery = new Intent();
+                    intentGallery.setType("image/*");
+                    intentGallery.setAction(Intent.ACTION_GET_CONTENT);
+                    startActivityForResult(Intent.createChooser(intentGallery, "Take a photo"), GALLERY);
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "Chưa nhập tiêu đề cho ảnh chế", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
         btnTakePhotoFromCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pictureIntent = new Intent(
-                        MediaStore.ACTION_IMAGE_CAPTURE
-                );
-               if(pictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                   if(ContextCompat.checkSelfPermission(getContext(),Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED)
-                   {
-                        requestPermissions(new String[]{Manifest.permission.CAMERA},
-                                CAMERA);
-                   }
-                   else {
-                       startActivityForResult(pictureIntent, CAMERA);
-                   }
-
-               }
-
+                 if(edtCaptionUploadPhoto.getText().toString() != null && !edtCaptionUploadPhoto.getText().toString().isEmpty())
+                {
+                    pictureIntent = new Intent(
+                            MediaStore.ACTION_IMAGE_CAPTURE
+                    );
+                    if(pictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                        if(ContextCompat.checkSelfPermission(getContext(),Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED)
+                        {
+                            requestPermissions(new String[]{Manifest.permission.CAMERA},
+                                    CAMERA);
+                        }
+                        else {
+                            startActivityForResult(pictureIntent, CAMERA);
+                        }
+                    }
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "Chưa nhập tiêu đề cho ảnh chế", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
             btnPhotoUploadGallery.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    uploadBtmapImage(bm);
+
+                    if(filePath == null && (edtCaptionUploadPhoto.getText().toString().isEmpty() || edtCaptionUploadPhoto.getText().toString() == null))
+                    {
+                        Toast.makeText(getContext(), "Chưa có tiêu đề hoặc chưa chọn ảnh", Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                    {
+                        uploadBtmapImage(bm);
+                    }
                 }
             });
         return root;
     }
 
-    private void DownloadImage(String downloadUrl)
+    private void DownloadImage(String downloadUrl, final String caption)
     {
         storageReference.child(downloadUrl)
                 .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -155,7 +173,7 @@ public class UploadPhotoFragment extends Fragment {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         totalCount = dataSnapshot.getChildrenCount();
                         //int id = (int) System.currentTimeMillis() / 1000;
-                        url.child("" + totalCount).setValue(new PhotoModel((int)totalCount + 1,firstText,getURL,1));
+                        url.child("" + totalCount).setValue(new PhotoModel((int)totalCount + 1,caption,getURL,1));
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -180,7 +198,7 @@ public class UploadPhotoFragment extends Fragment {
         if (requestCode == GALLERY && resultCode == RESULT_OK ) {
 
             filePath = data.getData();
-            firstText = edtCaptionUploadPhoto.getText().toString();
+            String firstText = edtCaptionUploadPhoto.getText().toString();
             bm = DrawTextToImage(data.getData(),edtCaptionUploadPhoto);
             imvPhotoUpload.setImageBitmap(bm);
         }
@@ -188,8 +206,8 @@ public class UploadPhotoFragment extends Fragment {
         {
             if (data != null && data.getExtras() != null) {
                 filePath = data.getData();
-                firstText = edtCaptionUploadPhoto.getText().toString();
-                bm = (Bitmap) data.getExtras().get("data");
+                String firstText = edtCaptionUploadPhoto.getText().toString();
+                bm = DrawTextToImage((Bitmap) data.getExtras().get("data"),firstText);
                 imvPhotoUpload.setImageBitmap(bm);
             }
         }
@@ -216,7 +234,7 @@ public class UploadPhotoFragment extends Fragment {
             if (captionString != null) {
 
                 Paint paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
-                paintText.setColor(Color.WHITE);
+                paintText.setColor(Color.GREEN);
                 paintText.setTextSize(50);
                 paintText.setStyle(Paint.Style.FILL);
                 paintText.setShadowLayer(10f, 10f, 10f, Color.BLACK);
@@ -243,6 +261,25 @@ public class UploadPhotoFragment extends Fragment {
         return newBitmap;
     }
 
+    private Bitmap DrawTextToImage(Bitmap toEdit, String text){
+
+        Bitmap dest = toEdit.copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas = new Canvas(dest);
+
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);  //set the look
+        //paint.setAntiAlias(true);
+        paint.setColor(Color.GREEN);
+        paint.setTextSize(50);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setShadowLayer(2.0f, 1.0f, 1.0f, Color.BLACK);
+
+        int pictureHeight = dest.getHeight();
+        paint.setTextSize(pictureHeight * .04629f);
+
+        canvas.drawText(text , dest.getWidth()/2,  100, paint);
+        return dest;
+    }
+
     private void uploadImage(Uri filePath) {
 
         if(filePath != null)
@@ -251,7 +288,7 @@ public class UploadPhotoFragment extends Fragment {
             progressDialog.setTitle("Uploading...");
             progressDialog.show();
 
-
+            String imgDownloadUrl = "vuivcimages/"+ UUID.randomUUID().toString() + ".jpg";
             StorageReference ref = storageReference.child(imgDownloadUrl);
             ref.putFile(filePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -290,6 +327,7 @@ public class UploadPhotoFragment extends Fragment {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
 
+       final String imgDownloadUrl = "vuivcimages/"+ UUID.randomUUID().toString() + ".jpg";
        StorageReference imagesRef = storageReference.child(imgDownloadUrl);
 
         UploadTask uploadTask = imagesRef.putBytes(data);
@@ -312,10 +350,11 @@ public class UploadPhotoFragment extends Fragment {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 progressDialog.dismiss();
+                DownloadImage(imgDownloadUrl,edtCaptionUploadPhoto.getText().toString());
                 Toast.makeText(getContext(), "Uploaded successfull", Toast.LENGTH_SHORT).show();
                 edtCaptionUploadPhoto.setText("");
                 imvPhotoUpload.setImageResource(R.drawable.vuivc_no_image_available);
-                DownloadImage(imgDownloadUrl);
+                filePath = null;
             }
         });
     }
