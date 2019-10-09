@@ -145,7 +145,13 @@ public class ProfileFragment extends Fragment
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Glide.with(getContext()).load(profileUserModel.getPhoto() + "/*.jpeg?height=500").into(imgAnhdaidien);
+                            if (profileUserModel.getPhoto() != null) {
+                                Glide.with(getContext()).load(profileUserModel.getPhoto() + "/*.jpeg?height=500").into(imgAnhdaidien);
+                            }
+                            else
+                            {
+                                Glide.with(getContext()).load(R.drawable.ic_launcher_background).into(imgAnhdaidien);
+                            }
                         }
                     });
 
